@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIP Carpark — ค้นหาทะเบียน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2a2f45;
+    --accent: #60a5fa;
+    --accent-dim: rgba(96,165,250,0.15);
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --success: #22c55e;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+  }
+  .light {
+    --bg: #e8ecf4;
+    --surface: #ffffff;
+    --surface2: #d8dde8;
+    --border: #b0b8cc;
+    --accent: #1d4ed8;
+    --accent-dim: rgba(29,78,216,0.10);
+    --text: #0f172a;
+    --muted: #334155;
+    --success: #15803d;
+    --warn: #b45309;
+    --danger: #b91c1c;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .app-name {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .app-version {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+
+  /* toggle */
+  .theme-btn {
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .theme-btn:hover { background: var(--accent-dim); border-color: var(--accent); }
+
+  /* refresh btn */
+  .refresh-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .refresh-btn:hover { color: var(--text); border-color: var(--accent); background: var(--accent-dim); }
+  .refresh-btn.spinning .icon { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Main ── */
+  main { flex: 1; padding: 32px 24px 48px; max-width: 720px; margin: 0 auto; width: 100%; }
+
+  /* search area */
+  .search-wrap { margin-bottom: 24px; }
+  .search-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: block;
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 0 16px;
+    gap: 10px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .search-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+  .search-icon { font-size: 18px; color: var(--muted); flex-shrink: 0; }
+  .search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 17px;
+    padding: 14px 0;
+    outline: none;
+  }
+  .search-input::placeholder { color: var(--muted); }
+  .clear-btn {
+    background: none; border: none;
+    color: var(--muted); cursor: pointer;
+    font-size: 18px; padding: 4px;
+    border-radius: 4px;
+    display: none;
+    transition: color 0.1s;
+  }
+  .clear-btn:hover { color: var(--text); }
+  .clear-btn.visible { display: flex; }
+
+  .hint-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .hint {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.12s;
+    background: var(--surface);
+  }
+  .hint:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  /* status bar */
+  .status-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+    min-height: 24px;
+  }
+  .status-text { font-size: 13px; color: var(--muted); }
+  .count-badge {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* loading */
+  .loading-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 64px 0; gap: 16px; color: var(--muted);
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  /* empty / error */
+  .empty-wrap {
+    text-align: center;
+    padding: 64px 0;
+    color: var(--muted);
+  }
+  .empty-wrap .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-wrap p { font-size: 15px; }
+  .empty-wrap .sub { font-size: 13px; margin-top: 6px; }
+
+  /* result cards */
+  .results { display: flex; flex-direction: column; gap: 10px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    transition: border-color 0.12s, box-shadow 0.12s;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-dim);
+  }
+  .card.exact { border-left: 3px solid var(--accent); }
+
+  .card-top {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 12px;
+    margin-bottom: 10px;
+  }
+  .card-name { font-size: 16px; font-weight: 600; }
+  .badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .badge-exact { background: rgba(59,130,246,0.15); color: var(--accent); }
+  .badge-partial { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+  .card-meta {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .meta-item {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 13px; color: var(--muted);
+  }
+  .meta-item strong { color: var(--text); font-weight: 500; }
+
+  .plates-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+  .plate-tag {
+    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+  .plate-tag.matched {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--surface);
+  }
+  footer span { color: var(--text); font-weight: 500; }
+
+  @media (max-width: 480px) {
+    header { padding: 12px 16px; }
+    main { padding: 20px 16px 40px; }
+    .search-input { font-size: 16px; }
+    .card-top { flex-direction: column; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-icon">🅿️</div>
+    <div>
+      <div class="app-name">HIP Carpark</div>
+      <div class="app-version">v1.0.0-r18 · ระบบค้นหาทะเบียน</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="refresh-btn" id="refreshBtn" onclick="loadData(true)">
+      <span class="icon">↻</span>
+      <span>รีเฟรช</span>
+    </button>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="เปลี่ยนธีม">🌙</button>
+  </div>
+</header>
+
+<main>
+  <div class="search-wrap">
+    <span class="search-label">ค้นหาด้วยทะเบียน, ชื่อ, หรือตำแหน่งจอด (เช่น 3/5)</span>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        class="search-input"
+        id="searchInput"
+        type="text"
+        placeholder="กก 1234 · เกียรติ · 3/5"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+      >
+      <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="hint-row">
+      <span class="hint" onclick="setHint('ทะเบียน')">🚗 ทะเบียน</span>
+      <span class="hint" onclick="setHint('ชั้น/ช่อง')">🅿️ ชั้น/ช่อง</span>
+      <span class="hint" onclick="setHint('ชื่อ')">👤 ชื่อ</span>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <span class="status-text" id="statusText">กำลังโหลด...</span>
+    <span class="count-badge" id="countBadge" style="display:none"></span>
+  </div>
+
+  <div id="resultsArea"></div>
+</main>
+
+<footer>
+  พัฒนาโดย <span>เกียรติเพิ่มพูน</span> &nbsp;·&nbsp; HIP Carpark Plate Search &nbsp;·&nbsp; v1.0.0-r18
+</footer>
+
+<script>
+// ── Config ──
+const SHEET_ID = '1d3zH7VBLt9K_YjxUrXViS33-WPASuFjvQqhZwIPUjeQ';
+const SHEET_TAB = 'ชีต1';
+const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
+
+// ── State ──
+let records = [];
+let lastUpdated = null;
+let isDark = true;
+let currentQuery = '';
+
+// ── Theme ──
+function toggleTheme() {
+  isDark = !isDark;
+  document.body.classList.toggle('light', !isDark);
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+}
+
+// ── CSV Parser ──
+function parseCsv(text) {
+  const rows = [];
+  let i = 0;
+  while (i < text.length) {
+    const row = [];
+    while (i < text.length && text[i] !== '\n') {
+      if (text[i] === '"') {
+        i++;
+        let cell = '';
+        while (i < text.length) {
+          if (text[i] === '"' && text[i+1] === '"') { cell += '"'; i += 2; }
+          else if (text[i] === '"') { i++; break; }
+          else { cell += text[i++]; }
+        }
+        row.push(cell.trim());
+        if (text[i] === ',') i++;
+      } else {
+        let cell = '';
+        while (i < text.length && text[i] !== ',' && text[i] !== '\n') cell += text[i++];
+        row.push(cell.trim());
+        if (text[i] === ',') i++;
+      }
+    }
+    if (text[i] === '\n') i++;
+    if (row.some(c => c)) rows.push(row);
+  }
+  return rows;
+}
+
+function parseRecords(csv) {
+  const rows = parseCsv(csv);
+  if (rows.length < 2) return [];
+  return rows.slice(1).filter(r => r[0]).map(r => ({
+    name: r[0] || '',
+    floor: r[1] || '',
+    slot: r[2] || '',
+    mainPlate: r[3] || '',
+    altPlates: [r[4],r[5],r[6],r[7],r[8]].filter(p => p && p.trim()),
+  }));
+}
+
+// ── Load ──
+async function loadData(force = false) {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  setStatus('กำลังโหลดข้อมูล...');
+  showLoading();
+
+  try {
+    const res = await fetch(CSV_URL + '&t=' + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    records = parseRecords(text);
+    lastUpdated = new Date();
+    setStatus(`ข้อมูล ${records.length} รายการ · อัปเดต ${formatTime(lastUpdated)}`);
+    renderResults(currentQuery);
+  } catch(e) {
+    setStatus('โหลดข้อมูลไม่สำเร็จ — ตรวจสอบการเชื่อมต่อ');
+    showError(e.message);
+  } finally {
+    btn.classList.remove('spinning');
+  }
+}
+
+function formatTime(d) {
+  return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+}
+
+// ── Search ──
+const PLATE_RE = /^(\d{0,2})([ก-ฮ]{1,3})(\d{1,5})$/;
+const FLOOR_SLOT_RE = /^(\d+)\/(\d+)$/;
+
+function normalize(s) { return s.replace(/\s+/g,'').toLowerCase(); }
+
+function parsePlate(s) {
+  const m = PLATE_RE.exec(s.replace(/\s+/g,''));
+  if (!m) return null;
+  return { prefix: m[1] || null, consonants: m[2], number: m[3] };
+}
+
+function search(query) {
+  const q = query.trim();
+  if (!q) return null; // null = show empty state
+
+  // ชั้น/ช่อง
+  const fs = FLOOR_SLOT_RE.exec(q);
+  if (fs) {
+    return records
+      .filter(r => r.floor === fs[1] && r.slot === fs[2])
+      .map(r => ({ record: r, matchedPlate: r.mainPlate, isExact: true }));
+  }
+
+  // ชื่อ
+  const qn = normalize(q);
+  const qParts = parsePlate(q);
+  const isDigits = /^\d+$/.test(q);
+
+  const results = [];
+  for (const r of records) {
+    // ชื่อ
+    if (normalize(r.name).includes(qn) && qn.length >= 2) {
+      results.push({ record: r, matchedPlate: r.mainPlate, isExact: false, byName: true });
+      continue;
+    }
+    // ทะเบียน
+    const allPlates = [r.mainPlate, ...r.altPlates].filter(p => p.trim());
+    for (const p of allPlates) {
+      const pParts = parsePlate(p);
+      if (qParts && pParts) {
+        if (qParts.consonants === pParts.consonants && qParts.number === pParts.number) {
+          results.push({ record: r, matchedPlate: p, isExact: true }); break;
+        }
+      } else if (isDigits && pParts) {
+        if (pParts.number === qn) { results.push({ record: r, matchedPlate: p, isExact: false }); break; }
+      }
+    }
+  }
+
+  // fallback contains
+  if (results.length === 0 && qn.length >= 4) {
+    for (const r of records) {
+      const allPlates = [r.mainPlate, ...r.altPlates].filter(p => p.trim());
+      for (const p of allPlates) {
+        if (normalize(p).includes(qn)) {
+          results.push({ record: r, matchedPlate: p, isExact: false }); break;
+        }
+      }
+    }
+  }
+  return results;
+}
+
+// ── Render ──
+function renderResults(query) {
+  const area = document.getElementById('resultsArea');
+  const badge = document.getElementById('countBadge');
+
+  if (records.length === 0) { area.innerHTML = ''; badge.style.display='none'; return; }
+
+  const results = search(query);
+
+  if (results === null) {
+    // ยังไม่ได้พิมพ์
+    badge.style.display = 'none';
+    area.innerHTML = `
+      <div class="empty-wrap">
+        <div class="icon">🅿️</div>
+        <p>พิมพ์เพื่อค้นหา</p>
+        <div class="sub">ทะเบียน, ชื่อ, หรือตำแหน่ง เช่น <strong>3/5</strong></div>
+      </div>`;
+    return;
+  }
+
+  if (results.length === 0) {
+    badge.style.display = 'none';
+    area.innerHTML = `
+      <div class="empty-wrap">
+        <div class="icon">🔍</div>
+        <p>ไม่พบรายการที่ตรงกัน</p>
+        <div class="sub">ลองพิมพ์ใหม่หรือเปลี่ยนรูปแบบการค้นหา</div>
+      </div>`;
+    return;
+  }
+
+  badge.textContent = `พบ ${results.length} รายการ`;
+  badge.style.display = 'inline-block';
+
+  area.innerHTML = `<div class="results">${results.map(res => cardHTML(res, query)).join('')}</div>`;
+}
+
+function cardHTML({ record: r, matchedPlate, isExact, byName }, query) {
+  const allPlates = [r.mainPlate, ...r.altPlates].filter(p => p.trim());
+  const platesHTML = allPlates.map(p =>
+    `<span class="plate-tag ${p === matchedPlate && !byName ? 'matched' : ''}">${p}</span>`
+  ).join('');
+
+  return `
+    <div class="card ${isExact ? 'exact' : ''}">
+      <div class="card-top">
+        <div class="card-name">${r.name}</div>
+        <span class="badge ${isExact ? 'badge-exact' : 'badge-partial'}">${isExact ? 'ตรงทั้งหมด' : 'ใกล้เคียง'}</span>
+      </div>
+      <div class="card-meta">
+        ${r.floor ? `<div class="meta-item">🏢 ชั้น <strong>${r.floor}</strong></div>` : ''}
+        ${r.slot  ? `<div class="meta-item">🅿️ ช่อง <strong>${r.slot}</strong></div>`  : ''}
+      </div>
+      <div class="plates-wrap">${platesHTML}</div>
+    </div>`;
+}
+
+// ── UI helpers ──
+function setStatus(msg) { document.getElementById('statusText').textContent = msg; }
+function showLoading() {
+  document.getElementById('countBadge').style.display = 'none';
+  document.getElementById('resultsArea').innerHTML = `
+    <div class="loading-wrap"><div class="spinner"></div><span>กำลังโหลด...</span></div>`;
+}
+function showError(msg) {
+  document.getElementById('resultsArea').innerHTML = `
+    <div class="empty-wrap">
+      <div class="icon">⚠️</div>
+      <p>โหลดข้อมูลไม่สำเร็จ</p>
+      <div class="sub">${msg}</div>
+    </div>`;
+}
+function clearSearch() {
+  const input = document.getElementById('searchInput');
+  input.value = '';
+  input.focus();
+  currentQuery = '';
+  document.getElementById('clearBtn').classList.remove('visible');
+  renderResults('');
+}
+function setHint(type) {
+  const input = document.getElementById('searchInput');
+  const hints = { 'ทะเบียน': 'กก 1234', 'ชั้น/ช่อง': '3/5', 'ชื่อ': 'เกียรติ' };
+  input.value = hints[type] || '';
+  input.focus();
+  handleInput();
+}
+
+// ── Input handler ──
+let debounce;
+function handleInput() {
+  const val = document.getElementById('searchInput').value;
+  currentQuery = val;
+  document.getElementById('clearBtn').classList.toggle('visible', val.length > 0);
+  clearTimeout(debounce);
+  debounce = setTimeout(() => renderResults(val), 120);
+}
+
+document.getElementById('searchInput').addEventListener('input', handleInput);
+
+// ── Init ──
+loadData();
+</script>
+</body>
+</html>
