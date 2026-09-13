@@ -16,9 +16,7 @@
     --accent-dim: rgba(96,165,250,0.15);
     --text: #f1f5f9;
     --muted: #94a3b8;
-    --success: #22c55e;
-    --warn: #f59e0b;
-    --danger: #ef4444;
+    --fs: 13px;
   }
   .light {
     --bg: #e8ecf4;
@@ -29,282 +27,259 @@
     --accent-dim: rgba(29,78,216,0.10);
     --text: #0f172a;
     --muted: #334155;
-    --success: #15803d;
-    --warn: #b45309;
-    --danger: #b91c1c;
   }
+  .fs-sm  { --fs: 12px; }
+  .fs-md  { --fs: 14px; }
+  .fs-lg  { --fs: 16px; }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'Sarabun', 'Inter', sans-serif;
+    font-size: var(--fs);
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    transition: background 0.2s, color 0.2s;
     display: flex;
     flex-direction: column;
+    transition: background 0.2s, color 0.2s;
   }
 
-  /* ── Header ── */
+  /* ── Header 2 แถว ── */
   header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border);
     background: var(--surface);
+    border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 10;
   }
-  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-row1 {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+  }
   .logo-icon {
-    width: 36px; height: 36px;
+    width: 32px; height: 32px;
     background: var(--accent);
-    border-radius: 8px;
+    border-radius: 7px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-  }
-  .app-name {
     font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    flex-shrink: 0;
   }
-  .app-version {
-    font-size: 11px;
-    color: var(--muted);
-    font-weight: 400;
-  }
-  .header-right { display: flex; align-items: center; gap: 10px; }
+  .app-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .app-version { font-size: 11px; color: var(--muted); }
 
-  /* toggle */
+  .header-row2 {
+    display: flex;
+    align-items: center;
+    padding: 8px 20px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* refresh */
+  .refresh-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 12px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .refresh-btn:hover { color: var(--text); border-color: var(--accent); background: var(--accent-dim); }
+  .refresh-btn.spinning .r-icon { display: inline-block; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* font size toggle */
+  .fs-label { font-size: 11px; color: var(--muted); margin-left: 4px; }
+  .fs-btns { display: flex; gap: 3px; }
+  .fs-btn {
+    width: 30px; height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    transition: all 0.12s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .fs-btn:hover, .fs-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+  /* theme btn */
   .theme-btn {
-    width: 40px; height: 40px;
-    border-radius: 8px;
+    width: 30px; height: 28px;
+    border-radius: 6px;
     border: 1px solid var(--border);
     background: var(--surface2);
     color: var(--text);
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    transition: background 0.15s, border-color 0.15s;
+    font-size: 15px;
+    transition: all 0.15s;
+    margin-left: auto;
   }
   .theme-btn:hover { background: var(--accent-dim); border-color: var(--accent); }
 
-  /* refresh btn */
-  .refresh-btn {
-    display: flex; align-items: center; gap: 6px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 13px;
-    font-family: inherit;
-    transition: all 0.15s;
-  }
-  .refresh-btn:hover { color: var(--text); border-color: var(--accent); background: var(--accent-dim); }
-  .refresh-btn.spinning .icon { animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
   /* ── Main ── */
-  main { flex: 1; padding: 32px 24px 48px; max-width: 720px; margin: 0 auto; width: 100%; }
-
-  /* search area */
-  .search-wrap { margin-bottom: 24px; }
-  .search-label {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 10px;
-    display: block;
+  main {
+    flex: 1;
+    padding: 20px 20px 16px;
+    max-width: 720px;
+    margin: 0 auto;
+    width: 100%;
+    overflow-y: auto;
   }
+
+  /* search */
+  .search-wrap { margin-bottom: 16px; }
+  .search-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; display: block; }
   .search-box {
-    display: flex;
-    align-items: center;
+    display: flex; align-items: center;
     background: var(--surface);
     border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 0 16px;
-    gap: 10px;
+    border-radius: 10px;
+    padding: 0 14px; gap: 8px;
     transition: border-color 0.15s, box-shadow 0.15s;
   }
   .search-box:focus-within {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-dim);
   }
-  .search-icon { font-size: 18px; color: var(--muted); flex-shrink: 0; }
+  .search-icon { font-size: 16px; color: var(--muted); flex-shrink: 0; }
   .search-input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 17px;
-    padding: 14px 0;
-    outline: none;
+    flex: 1; border: none; background: transparent;
+    color: var(--text); font-family: inherit;
+    font-size: calc(var(--fs) + 2px);
+    padding: 12px 0; outline: none;
   }
   .search-input::placeholder { color: var(--muted); }
   .clear-btn {
-    background: none; border: none;
-    color: var(--muted); cursor: pointer;
-    font-size: 18px; padding: 4px;
-    border-radius: 4px;
-    display: none;
-    transition: color 0.1s;
+    background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 16px; padding: 4px;
+    border-radius: 4px; display: none; transition: color 0.1s;
   }
   .clear-btn:hover { color: var(--text); }
   .clear-btn.visible { display: flex; }
 
-  .hint-row {
-    display: flex; gap: 8px; flex-wrap: wrap;
-    margin-top: 10px;
-  }
+  .hint-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
   .hint {
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.12s;
-    background: var(--surface);
+    font-size: 11px; padding: 4px 10px;
+    border-radius: 20px; border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer;
+    transition: all 0.12s; background: var(--surface);
   }
   .hint:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
-  /* status bar */
+  /* status */
   .status-bar {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px;
-    min-height: 24px;
+    margin-bottom: 12px; min-height: 22px;
   }
-  .status-text { font-size: 13px; color: var(--muted); }
+  .status-text { font-size: 12px; color: var(--muted); }
   .count-badge {
-    font-size: 12px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    background: var(--surface2);
-    color: var(--muted);
-    border: 1px solid var(--border);
+    font-size: 11px; padding: 2px 9px; border-radius: 20px;
+    background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
   }
 
   /* loading */
   .loading-wrap {
     display: flex; flex-direction: column; align-items: center;
-    padding: 64px 0; gap: 16px; color: var(--muted);
+    padding: 48px 0; gap: 12px; color: var(--muted);
   }
   .spinner {
-    width: 36px; height: 36px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
+    width: 32px; height: 32px;
+    border: 3px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.7s linear infinite;
   }
 
-  /* empty / error */
-  .empty-wrap {
-    text-align: center;
-    padding: 64px 0;
-    color: var(--muted);
-  }
-  .empty-wrap .icon { font-size: 40px; margin-bottom: 12px; }
-  .empty-wrap p { font-size: 15px; }
-  .empty-wrap .sub { font-size: 13px; margin-top: 6px; }
+  /* empty/error */
+  .empty-wrap { text-align: center; padding: 48px 0; color: var(--muted); }
+  .empty-wrap .icon { font-size: 36px; margin-bottom: 10px; }
+  .empty-wrap p { font-size: var(--fs); }
+  .empty-wrap .sub { font-size: calc(var(--fs) - 1px); margin-top: 5px; }
 
-  /* result cards */
-  .results { display: flex; flex-direction: column; gap: 10px; }
-
+  /* cards */
+  .results { display: flex; flex-direction: column; gap: 8px; }
   .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 13px 15px;
     transition: border-color 0.12s, box-shadow 0.12s;
   }
-  .card:hover {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-dim);
-  }
+  .card:hover { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
   .card.exact { border-left: 3px solid var(--accent); }
-
   .card-top {
     display: flex; align-items: flex-start;
-    justify-content: space-between; gap: 12px;
-    margin-bottom: 10px;
+    justify-content: space-between; gap: 10px; margin-bottom: 8px;
   }
-  .card-name { font-size: 16px; font-weight: 600; }
+  .card-name { font-size: calc(var(--fs) + 1px); font-weight: 600; }
   .badge {
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 20px;
-    white-space: nowrap;
-    flex-shrink: 0;
+    font-size: 10px; padding: 2px 7px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0;
   }
-  .badge-exact { background: rgba(59,130,246,0.15); color: var(--accent); }
+  .badge-exact { background: var(--accent-dim); color: var(--accent); }
   .badge-partial { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
-
-  .card-meta {
-    display: flex; gap: 16px; flex-wrap: wrap;
-    margin-bottom: 12px;
-  }
-  .meta-item {
-    display: flex; align-items: center; gap: 5px;
-    font-size: 13px; color: var(--muted);
-  }
+  .card-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+  .meta-item { display: flex; align-items: center; gap: 4px; font-size: calc(var(--fs) - 1px); color: var(--muted); }
   .meta-item strong { color: var(--text); font-weight: 500; }
-
-  .plates-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+  .plates-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
   .plate-tag {
-    font-size: 13px;
-    padding: 5px 12px;
-    border-radius: 6px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    font-weight: 500;
-    letter-spacing: 0.03em;
+    font-size: calc(var(--fs) - 1px); padding: 4px 10px; border-radius: 6px;
+    background: var(--surface2); border: 1px solid var(--border);
+    font-weight: 500; letter-spacing: 0.03em;
   }
-  .plate-tag.matched {
-    background: var(--accent-dim);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
+  .plate-tag.matched { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
-  /* ── Footer ── */
+  /* ── Footer fixed ── */
   footer {
     border-top: 1px solid var(--border);
-    padding: 16px 24px;
+    padding: 10px 20px;
     text-align: center;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--muted);
     background: var(--surface);
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
   }
   footer span { color: var(--text); font-weight: 500; }
 
   @media (max-width: 480px) {
-    header { padding: 12px 16px; }
-    main { padding: 20px 16px 40px; }
-    .search-input { font-size: 16px; }
-    .card-top { flex-direction: column; gap: 6px; }
+    .header-row1 { padding: 8px 14px; }
+    .header-row2 { padding: 6px 14px; }
+    main { padding: 14px 14px 12px; }
+    .search-input { font-size: calc(var(--fs) + 1px); }
   }
 </style>
 </head>
-<body>
+<body class="fs-sm">
 
 <header>
-  <div class="header-left">
+  <div class="header-row1">
     <div class="logo-icon">🅿️</div>
     <div>
       <div class="app-name">HIP Carpark</div>
       <div class="app-version">v1.0.0-r18 · ระบบค้นหาทะเบียน</div>
     </div>
   </div>
-  <div class="header-right">
+  <div class="header-row2">
     <button class="refresh-btn" id="refreshBtn" onclick="loadData(true)">
-      <span class="icon">↻</span>
+      <span class="r-icon">↻</span>
       <span>รีเฟรช</span>
     </button>
+    <span class="fs-label">ขนาดตัวหนังสือ</span>
+    <div class="fs-btns">
+      <button class="fs-btn active" id="fs-sm" onclick="setFs('sm')" title="เล็ก">ก</button>
+      <button class="fs-btn" id="fs-md" onclick="setFs('md')" title="กลาง">ก</button>
+      <button class="fs-btn" id="fs-lg" onclick="setFs('lg')" title="ใหญ่">ก</button>
+    </div>
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="เปลี่ยนธีม">🌙</button>
   </div>
 </header>
@@ -345,12 +320,10 @@
 </footer>
 
 <script>
-// ── Config ──
 const SHEET_ID = '1d3zH7VBLt9K_YjxUrXViS33-WPASuFjvQqhZwIPUjeQ';
 const SHEET_TAB = 'ชีต1';
 const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
 
-// ── State ──
 let records = [];
 let lastUpdated = null;
 let isDark = true;
@@ -361,6 +334,15 @@ function toggleTheme() {
   isDark = !isDark;
   document.body.classList.toggle('light', !isDark);
   document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+}
+
+// ── Font size ──
+function setFs(size) {
+  document.body.classList.remove('fs-sm','fs-md','fs-lg');
+  document.body.classList.add('fs-' + size);
+  ['sm','md','lg'].forEach(s => {
+    document.getElementById('fs-' + s).classList.toggle('active', s === size);
+  });
 }
 
 // ── CSV Parser ──
@@ -411,7 +393,6 @@ async function loadData(force = false) {
   btn.classList.add('spinning');
   setStatus('กำลังโหลดข้อมูล...');
   showLoading();
-
   try {
     const res = await fetch(CSV_URL + '&t=' + Date.now());
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -421,7 +402,7 @@ async function loadData(force = false) {
     setStatus(`ข้อมูล ${records.length} รายการ · อัปเดต ${formatTime(lastUpdated)}`);
     renderResults(currentQuery);
   } catch(e) {
-    setStatus('โหลดข้อมูลไม่สำเร็จ — ตรวจสอบการเชื่อมต่อ');
+    setStatus('โหลดข้อมูลไม่สำเร็จ');
     showError(e.message);
   } finally {
     btn.classList.remove('spinning');
@@ -441,12 +422,12 @@ function normalize(s) { return s.replace(/\s+/g,'').toLowerCase(); }
 function parsePlate(s) {
   const m = PLATE_RE.exec(s.replace(/\s+/g,''));
   if (!m) return null;
-  return { prefix: m[1] || null, consonants: m[2], number: m[3] };
+  return { consonants: m[2], number: m[3] };
 }
 
 function search(query) {
   const q = query.trim();
-  if (!q) return null; // null = show empty state
+  if (!q) return null;
 
   // ชั้น/ช่อง
   const fs = FLOOR_SLOT_RE.exec(q);
@@ -456,15 +437,14 @@ function search(query) {
       .map(r => ({ record: r, matchedPlate: r.mainPlate, isExact: true }));
   }
 
-  // ชื่อ
   const qn = normalize(q);
   const qParts = parsePlate(q);
   const isDigits = /^\d+$/.test(q);
-
   const results = [];
+
   for (const r of records) {
     // ชื่อ
-    if (normalize(r.name).includes(qn) && qn.length >= 2) {
+    if (qn.length >= 2 && normalize(r.name).includes(qn)) {
       results.push({ record: r, matchedPlate: r.mainPlate, isExact: false, byName: true });
       continue;
     }
@@ -500,46 +480,31 @@ function search(query) {
 function renderResults(query) {
   const area = document.getElementById('resultsArea');
   const badge = document.getElementById('countBadge');
-
   if (records.length === 0) { area.innerHTML = ''; badge.style.display='none'; return; }
 
   const results = search(query);
 
   if (results === null) {
-    // ยังไม่ได้พิมพ์
     badge.style.display = 'none';
-    area.innerHTML = `
-      <div class="empty-wrap">
-        <div class="icon">🅿️</div>
-        <p>พิมพ์เพื่อค้นหา</p>
-        <div class="sub">ทะเบียน, ชื่อ, หรือตำแหน่ง เช่น <strong>3/5</strong></div>
-      </div>`;
+    area.innerHTML = `<div class="empty-wrap"><div class="icon">🅿️</div><p>พิมพ์เพื่อค้นหา</p><div class="sub">ทะเบียน, ชื่อ, หรือตำแหน่ง เช่น <strong>3/5</strong></div></div>`;
     return;
   }
-
   if (results.length === 0) {
     badge.style.display = 'none';
-    area.innerHTML = `
-      <div class="empty-wrap">
-        <div class="icon">🔍</div>
-        <p>ไม่พบรายการที่ตรงกัน</p>
-        <div class="sub">ลองพิมพ์ใหม่หรือเปลี่ยนรูปแบบการค้นหา</div>
-      </div>`;
+    area.innerHTML = `<div class="empty-wrap"><div class="icon">🔍</div><p>ไม่พบรายการที่ตรงกัน</p><div class="sub">ลองพิมพ์ใหม่หรือเปลี่ยนรูปแบบ</div></div>`;
     return;
   }
 
   badge.textContent = `พบ ${results.length} รายการ`;
   badge.style.display = 'inline-block';
-
-  area.innerHTML = `<div class="results">${results.map(res => cardHTML(res, query)).join('')}</div>`;
+  area.innerHTML = `<div class="results">${results.map(res => cardHTML(res)).join('')}</div>`;
 }
 
-function cardHTML({ record: r, matchedPlate, isExact, byName }, query) {
+function cardHTML({ record: r, matchedPlate, isExact, byName }) {
   const allPlates = [r.mainPlate, ...r.altPlates].filter(p => p.trim());
   const platesHTML = allPlates.map(p =>
     `<span class="plate-tag ${p === matchedPlate && !byName ? 'matched' : ''}">${p}</span>`
   ).join('');
-
   return `
     <div class="card ${isExact ? 'exact' : ''}">
       <div class="card-top">
@@ -558,16 +523,10 @@ function cardHTML({ record: r, matchedPlate, isExact, byName }, query) {
 function setStatus(msg) { document.getElementById('statusText').textContent = msg; }
 function showLoading() {
   document.getElementById('countBadge').style.display = 'none';
-  document.getElementById('resultsArea').innerHTML = `
-    <div class="loading-wrap"><div class="spinner"></div><span>กำลังโหลด...</span></div>`;
+  document.getElementById('resultsArea').innerHTML = `<div class="loading-wrap"><div class="spinner"></div><span>กำลังโหลด...</span></div>`;
 }
 function showError(msg) {
-  document.getElementById('resultsArea').innerHTML = `
-    <div class="empty-wrap">
-      <div class="icon">⚠️</div>
-      <p>โหลดข้อมูลไม่สำเร็จ</p>
-      <div class="sub">${msg}</div>
-    </div>`;
+  document.getElementById('resultsArea').innerHTML = `<div class="empty-wrap"><div class="icon">⚠️</div><p>โหลดข้อมูลไม่สำเร็จ</p><div class="sub">${msg}</div></div>`;
 }
 function clearSearch() {
   const input = document.getElementById('searchInput');
@@ -577,12 +536,23 @@ function clearSearch() {
   document.getElementById('clearBtn').classList.remove('visible');
   renderResults('');
 }
+
+// ── Hint — ถ้าช่องว่างอยู่ ให้โชว์ placeholder ไม่ค้นหาตัวอย่าง ──
 function setHint(type) {
   const input = document.getElementById('searchInput');
-  const hints = { 'ทะเบียน': 'กก 1234', 'ชั้น/ช่อง': '3/5', 'ชื่อ': 'เกียรติ' };
-  input.value = hints[type] || '';
-  input.focus();
-  handleInput();
+  const val = input.value.trim();
+  if (val === '') {
+    // ช่องว่าง — แค่ใส่ placeholder hint ให้เห็นตัวอย่าง ไม่ trigger search
+    const examples = { 'ทะเบียน': 'กก 1234', 'ชั้น/ช่อง': '3/5', 'ชื่อ': 'ชื่อ...' };
+    input.placeholder = examples[type] || '';
+    input.focus();
+  } else {
+    // มีข้อความอยู่แล้ว — ล้างแล้วใส่ตัวอย่างให้เลย
+    const examples = { 'ทะเบียน': 'กก 1234', 'ชั้น/ช่อง': '3/5', 'ชื่อ': '' };
+    input.value = examples[type] || '';
+    input.focus();
+    handleInput();
+  }
 }
 
 // ── Input handler ──
@@ -596,8 +566,6 @@ function handleInput() {
 }
 
 document.getElementById('searchInput').addEventListener('input', handleInput);
-
-// ── Init ──
 loadData();
 </script>
 </body>
