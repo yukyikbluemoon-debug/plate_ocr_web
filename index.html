@@ -5,97 +5,116 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HIP Carpark — ค้นหาทะเบียน</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
     --border: #2a2f45; --accent: #60a5fa; --accent-dim: rgba(96,165,250,0.15);
-    --text: #f1f5f9; --muted: #94a3b8; --fs: 13px;
+    --text: #f1f5f9; --muted: #94a3b8;
+    --fs: 15px;   /* เล็ก default */
+    --fs-sm: 13px; --fs-xs: 12px;
+    --pad: 12px; --gap: 8px; --radius: 10px;
   }
   .light {
     --bg: #e8ecf4; --surface: #ffffff; --surface2: #d8dde8;
     --border: #b0b8cc; --accent: #1d4ed8; --accent-dim: rgba(29,78,216,0.10);
     --text: #0f172a; --muted: #334155;
   }
-  .fs-sm { --fs: 12px; } .fs-md { --fs: 14px; } .fs-lg { --fs: 16px; }
+  /* ขนาดตัวอักษร — ทุกค่าขยับพร้อมกัน */
+  .fs-sm { --fs:15px; --fs-sm:13px; --fs-xs:12px; --pad:12px; --gap:8px; --radius:10px; }
+  .fs-md { --fs:18px; --fs-sm:16px; --fs-xs:14px; --pad:14px; --gap:10px; --radius:11px; }
+  .fs-lg { --fs:22px; --fs-sm:19px; --fs-xs:16px; --pad:17px; --gap:12px; --radius:13px; }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Sarabun', sans-serif; font-size: var(--fs);
+    font-family: 'Sarabun', sans-serif;
+    font-size: var(--fs);
     background: var(--bg); color: var(--text);
     height: 100vh; display: flex; flex-direction: column;
     transition: background 0.2s, color 0.2s; overflow: hidden;
   }
 
-  /* Header */
+  /* ── Header ── */
   header { background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .header-row1 {
-    display: flex; align-items: center; padding: 10px 20px;
+    display: flex; align-items: center; padding: 10px 18px;
     border-bottom: 1px solid var(--border); gap: 10px;
   }
   .logo-icon {
-    width: 32px; height: 32px; background: var(--accent); border-radius: 7px;
-    display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+    width: 36px; height: 36px; background: var(--accent); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
   }
-  .app-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
-  .app-version { font-size: 12px; color: var(--muted); }
+  .app-name { font-size: var(--fs-sm); font-weight: 700; line-height: 1.2; }
+  .app-version { font-size: var(--fs-xs); color: var(--muted); }
+
   .header-row2 {
-    display: flex; align-items: center; padding: 8px 20px; gap: 8px; flex-wrap: wrap;
+    display: flex; align-items: center; padding: 8px 18px; gap: 8px; flex-wrap: wrap;
   }
   .refresh-btn {
-    display: flex; align-items: center; gap: 5px; padding: 6px 12px;
-    border-radius: 7px; border: 1px solid var(--border); background: var(--surface2);
-    color: var(--muted); cursor: pointer; font-size: 12px; font-family: inherit; transition: all 0.15s;
+    display: flex; align-items: center; gap: 5px;
+    padding: calc(var(--fs-xs) * 0.5) calc(var(--fs-xs) * 1);
+    border-radius: 7px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--muted);
+    cursor: pointer; font-size: var(--fs-xs); font-family: inherit; transition: all 0.15s;
   }
   .refresh-btn:hover { color: var(--text); border-color: var(--accent); background: var(--accent-dim); }
   .refresh-btn.spinning .r-icon { display: inline-block; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .fs-label { font-size: 11px; color: var(--muted); margin-left: 4px; }
+
+  .fs-label { font-size: var(--fs-xs); color: var(--muted); white-space: nowrap; }
   .fs-btns { display: flex; gap: 3px; }
   .fs-btn {
-    width: 30px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+    height: 30px; padding: 0 10px; border-radius: 6px; border: 1px solid var(--border);
     background: var(--surface2); color: var(--muted); cursor: pointer;
-    font-family: inherit; font-size: 11px; transition: all 0.12s;
+    font-family: inherit; transition: all 0.12s;
     display: flex; align-items: center; justify-content: center;
   }
+  .fs-btn.sz-sm { font-size: 13px; }
+  .fs-btn.sz-md { font-size: 16px; }
+  .fs-btn.sz-lg { font-size: 20px; }
   .fs-btn:hover, .fs-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
   .theme-btn {
-    width: 30px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+    width: 32px; height: 30px; border-radius: 6px; border: 1px solid var(--border);
     background: var(--surface2); color: var(--text); cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    font-size: 15px; transition: all 0.15s; margin-left: auto;
+    font-size: var(--fs-sm); transition: all 0.15s; margin-left: auto;
   }
   .theme-btn:hover { background: var(--accent-dim); border-color: var(--accent); }
 
-  /* Main scrollable */
-  main { flex: 1; overflow-y: auto; padding: 16px 20px 12px; max-width: 720px; margin: 0 auto; width: 100%; }
+  /* ── Main ── */
+  main { flex: 1; overflow-y: auto; padding: var(--pad) 18px 10px; max-width: 720px; margin: 0 auto; width: 100%; }
 
   /* Search */
-  .search-wrap { margin-bottom: 12px; }
+  .search-wrap { margin-bottom: var(--gap); }
   .search-box {
     display: flex; align-items: center; background: var(--surface);
-    border: 1.5px solid var(--border); border-radius: 10px; padding: 0 14px; gap: 8px;
+    border: 2px solid var(--border); border-radius: var(--radius);
+    padding: 0 var(--pad); gap: var(--gap);
     transition: border-color 0.15s, box-shadow 0.15s;
   }
   .search-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
-  .search-icon { font-size: 16px; color: var(--muted); flex-shrink: 0; }
+  .search-icon { font-size: var(--fs-sm); color: var(--muted); flex-shrink: 0; }
   .search-input {
     flex: 1; border: none; background: transparent; color: var(--text);
-    font-family: inherit; font-size: calc(var(--fs) + 2px); padding: 11px 0; outline: none;
+    font-family: inherit; font-size: var(--fs);
+    padding: var(--pad) 0; outline: none;
   }
   .search-input::placeholder { color: var(--muted); }
   .clear-btn {
     background: none; border: none; color: var(--muted); cursor: pointer;
-    font-size: 16px; padding: 4px; border-radius: 4px; display: none; transition: color 0.1s;
+    font-size: var(--fs-sm); padding: 4px; border-radius: 4px;
+    display: none; transition: color 0.1s;
   }
   .clear-btn:hover { color: var(--text); }
   .clear-btn.visible { display: flex; }
 
-  /* Sort/filter pills */
-  .sort-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
-  .sort-label { font-size: 11px; color: var(--muted); }
+  /* Sort pills */
+  .sort-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: var(--gap); align-items: center; }
+  .sort-label { font-size: var(--fs-xs); color: var(--muted); }
   .sort-btn {
-    font-size: 11px; padding: 4px 10px; border-radius: 20px;
+    font-size: var(--fs-xs); padding: 5px 12px; border-radius: 20px;
     border: 1px solid var(--border); color: var(--muted); cursor: pointer;
     transition: all 0.12s; background: var(--surface); font-family: inherit;
   }
@@ -105,11 +124,11 @@
   /* Status */
   .status-bar {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 10px; min-height: 20px;
+    margin: var(--gap) 0; min-height: 22px; flex-wrap: wrap; gap: 4px;
   }
-  .status-text { font-size: 11px; color: var(--muted); }
+  .status-text { font-size: var(--fs-xs); color: var(--muted); }
   .count-badge {
-    font-size: 11px; padding: 2px 9px; border-radius: 20px;
+    font-size: var(--fs-xs); padding: 3px 10px; border-radius: 20px;
     background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
   }
 
@@ -119,51 +138,71 @@
     padding: 48px 0; gap: 12px; color: var(--muted);
   }
   .spinner {
-    width: 32px; height: 32px; border: 3px solid var(--border);
+    width: 36px; height: 36px; border: 3px solid var(--border);
     border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite;
   }
   .empty-wrap { text-align: center; padding: 48px 0; color: var(--muted); }
-  .empty-wrap .icon { font-size: 36px; margin-bottom: 10px; }
+  .empty-wrap .icon { font-size: calc(var(--fs) * 2.2); margin-bottom: 10px; }
   .empty-wrap p { font-size: var(--fs); }
-  .empty-wrap .sub { font-size: calc(var(--fs) - 1px); margin-top: 5px; }
+  .empty-wrap .sub { font-size: var(--fs-sm); margin-top: 5px; }
+
+  /* Floor group header */
+  .floor-group { margin-bottom: var(--gap); }
+  .floor-header {
+    font-size: var(--fs-sm); font-weight: 600; color: var(--accent);
+    padding: 6px 4px; margin-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .floor-count { font-size: var(--fs-xs); color: var(--muted); font-weight: 400; }
 
   /* Cards */
-  .results { display: flex; flex-direction: column; gap: 8px; }
+  .results { display: flex; flex-direction: column; gap: var(--gap); }
   .card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 12px 14px;
+    border-radius: var(--radius); padding: var(--pad) calc(var(--pad) * 1.1);
     transition: border-color 0.12s, box-shadow 0.12s;
   }
   .card:hover { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
   .card.exact { border-left: 3px solid var(--accent); }
-  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 7px; }
-  .card-name { font-size: calc(var(--fs) + 1px); font-weight: 600; }
-  .badge { font-size: 10px; padding: 2px 7px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .card-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: var(--gap); margin-bottom: calc(var(--gap) * 0.8);
+  }
+  .card-name { font-size: var(--fs); font-weight: 700; line-height: 1.3; }
+  .badge {
+    font-size: var(--fs-xs); padding: 3px 9px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0;
+  }
   .badge-exact { background: var(--accent-dim); color: var(--accent); }
   .badge-partial { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
-  .card-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 9px; }
-  .meta-item { display: flex; align-items: center; gap: 4px; font-size: calc(var(--fs) - 1px); color: var(--muted); }
-  .meta-item strong { color: var(--text); font-weight: 500; }
+
+  .card-meta { display: flex; gap: calc(var(--gap) * 1.5); flex-wrap: wrap; margin-bottom: var(--gap); }
+  .meta-item { display: flex; align-items: center; gap: 5px; font-size: var(--fs-sm); color: var(--muted); }
+  .meta-item strong { color: var(--text); font-weight: 600; font-size: var(--fs); }
+
   .plates-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
   .plate-tag {
-    font-size: calc(var(--fs) - 1px); padding: 3px 10px; border-radius: 6px;
+    font-size: var(--fs-sm); padding: 5px 13px; border-radius: 7px;
     background: var(--surface2); border: 1px solid var(--border);
-    font-weight: 500; letter-spacing: 0.03em;
+    font-weight: 600; letter-spacing: 0.04em; cursor: pointer;
+    transition: all 0.12s;
   }
+  .plate-tag:hover { border-color: var(--muted); }
   .plate-tag.matched { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+  .plate-tag.copied { background: rgba(34,197,94,0.15); border-color: #22c55e; color: #22c55e; }
 
-  /* Footer fixed */
+  /* Footer */
   footer {
-    border-top: 1px solid var(--border); padding: 8px 20px;
-    text-align: center; font-size: 11px; color: var(--muted);
+    border-top: 1px solid var(--border); padding: 8px 18px;
+    text-align: center; font-size: var(--fs-xs); color: var(--muted);
     background: var(--surface); flex-shrink: 0;
   }
-  footer span { color: var(--text); font-weight: 500; }
+  footer span { color: var(--text); font-weight: 600; }
 
   @media (max-width: 480px) {
-    .header-row1 { padding: 8px 14px; }
-    .header-row2 { padding: 6px 14px; }
-    main { padding: 12px 14px 10px; }
+    .header-row1, .header-row2 { padding-left: 14px; padding-right: 14px; }
+    main { padding-left: 14px; padding-right: 14px; }
   }
 </style>
 </head>
@@ -174,18 +213,18 @@
     <div class="logo-icon">🅿️</div>
     <div>
       <div class="app-name">HIP Carpark</div>
-      <div class="app-version">v1.0.0-r18 · ระบบค้นหาทะเบียน</div>
+      <div class="app-version">v1.5.0-r18 · ระบบค้นหาทะเบียน</div>
     </div>
   </div>
   <div class="header-row2">
     <button class="refresh-btn" id="refreshBtn" onclick="loadData(true)">
       <span class="r-icon">↻</span><span>รีเฟรช</span>
     </button>
-    <span class="fs-label">ขนาดตัวหนังสือ</span>
+    <span class="fs-label">ขนาด</span>
     <div class="fs-btns">
-      <button class="fs-btn active" id="fs-sm" onclick="setFs('sm')">ก</button>
-      <button class="fs-btn" id="fs-md" onclick="setFs('md')">ก</button>
-      <button class="fs-btn" id="fs-lg" onclick="setFs('lg')">ก</button>
+      <button class="fs-btn sz-sm active" id="fs-sm" onclick="setFs('sm')">ก</button>
+      <button class="fs-btn sz-md" id="fs-md" onclick="setFs('md')">ก</button>
+      <button class="fs-btn sz-lg" id="fs-lg" onclick="setFs('lg')">ก</button>
     </div>
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
   </div>
@@ -196,15 +235,15 @@
     <div class="search-box">
       <span class="search-icon">🔍</span>
       <input class="search-input" id="searchInput" type="text"
-        placeholder="พิมพ์ทะเบียน, ชื่อ, หรือ 3/5"
+        placeholder="ทะเบียน, ชื่อ, หรือ ชั้น/ช่อง เช่น 3/5"
         autocomplete="off" autocorrect="off" spellcheck="false">
       <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
     </div>
     <div class="sort-row">
       <span class="sort-label">เรียงตาม</span>
-      <button class="sort-btn" id="sort-plate" onclick="setSort('plate')">🚗 ทะเบียน</button>
       <button class="sort-btn active" id="sort-floor" onclick="setSort('floor')">🅿️ ชั้น/ช่อง</button>
       <button class="sort-btn" id="sort-name" onclick="setSort('name')">👤 ชื่อ</button>
+      <button class="sort-btn" id="sort-plate" onclick="setSort('plate')">🚗 ทะเบียน</button>
     </div>
   </div>
 
@@ -221,62 +260,66 @@
 </footer>
 
 <script>
-const SHEET_ID = '1d3zH7VBLt9K_YjxUrXViS33-WPASuFjvQqhZwIPUjeQ';
+const SHEET_ID  = '1d3zH7VBLt9K_YjxUrXViS33-WPASuFjvQqhZwIPUjeQ';
 const SHEET_TAB = 'ชีต1';
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
+const CONFIG_TAB = 'config';
+const CSV_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
+const CONFIG_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CONFIG_TAB)}`;
 
 let records = [];
-let lastUpdated = null;
+let sheetUpdatedAt = '';
 let isDark = true;
 let currentQuery = '';
-let currentSort = 'floor'; // default เรียงตามชั้น/ช่อง
+let currentSort = 'floor';
 
-// Theme
+// ── Theme ──
 function toggleTheme() {
   isDark = !isDark;
   document.body.classList.toggle('light', !isDark);
   document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
 }
 
-// Font size
+// ── Font size ──
 function setFs(size) {
   document.body.classList.remove('fs-sm','fs-md','fs-lg');
   document.body.classList.add('fs-' + size);
-  ['sm','md','lg'].forEach(s => document.getElementById('fs-'+s).classList.toggle('active', s===size));
+  ['sm','md','lg'].forEach(s =>
+    document.getElementById('fs-'+s).classList.toggle('active', s===size));
 }
 
-// Sort
+// ── Sort ──
 function setSort(by) {
   currentSort = by;
-  ['plate','floor','name'].forEach(s => document.getElementById('sort-'+s).classList.toggle('active', s===by));
+  ['floor','name','plate'].forEach(s =>
+    document.getElementById('sort-'+s).classList.toggle('active', s===by));
   renderResults(currentQuery);
 }
 
 function sortRecords(list) {
   const copy = [...list];
   if (currentSort === 'name') {
-    copy.sort((a,b) => a.name.localeCompare(b.name, 'th'));
+    copy.sort((a,b) => a.name.localeCompare(b.name,'th'));
   } else if (currentSort === 'plate') {
-    copy.sort((a,b) => a.mainPlate.localeCompare(b.mainPlate, 'th'));
-  } else { // floor
+    copy.sort((a,b) => a.mainPlate.localeCompare(b.mainPlate,'th'));
+  } else {
     copy.sort((a,b) => {
-      const fa = parseInt(a.floor)||0, fb = parseInt(b.floor)||0;
-      if (fa !== fb) return fa - fb;
-      return (parseInt(a.slot)||0) - (parseInt(b.slot)||0);
+      const fa=parseInt(a.floor)||0, fb=parseInt(b.floor)||0;
+      if (fa!==fb) return fa-fb;
+      return (parseInt(a.slot)||0)-(parseInt(b.slot)||0);
     });
   }
   return copy;
 }
 
-// CSV Parser
+// ── CSV Parser ──
 function parseCsv(text) {
-  const rows = []; let i = 0;
-  while (i < text.length) {
-    const row = [];
-    while (i < text.length && text[i] !== '\n') {
-      if (text[i] === '"') {
-        i++; let cell = '';
-        while (i < text.length) {
+  const rows=[]; let i=0;
+  while (i<text.length) {
+    const row=[];
+    while (i<text.length && text[i]!=='\n') {
+      if (text[i]==='"') {
+        i++; let cell='';
+        while (i<text.length) {
           if (text[i]==='"' && text[i+1]==='"') { cell+='"'; i+=2; }
           else if (text[i]==='"') { i++; break; }
           else { cell+=text[i++]; }
@@ -295,27 +338,42 @@ function parseCsv(text) {
 }
 
 function parseRecords(csv) {
-  const rows = parseCsv(csv);
-  if (rows.length < 2) return [];
+  const rows=parseCsv(csv);
+  if (rows.length<2) return [];
   return rows.slice(1).filter(r=>r[0]).map(r=>({
-    name: r[0]||'', floor: r[1]||'', slot: r[2]||'', mainPlate: r[3]||'',
-    altPlates: [r[4],r[5],r[6],r[7],r[8]].filter(p=>p&&p.trim()),
+    name:r[0]||'', floor:r[1]||'', slot:r[2]||'', mainPlate:r[3]||'',
+    altPlates:[r[4],r[5],r[6],r[7],r[8]].filter(p=>p&&p.trim()),
   }));
 }
 
-// Load
+// ── Load config (updated date จาก B1) ──
+async function loadConfig() {
+  try {
+    const res = await fetch(CONFIG_URL+'&t='+Date.now());
+    if (!res.ok) return;
+    const text = await res.text();
+    const rows = parseCsv(text);
+    // B1 = rows[0][1]
+    if (rows[0] && rows[0][1]) sheetUpdatedAt = rows[0][1].trim();
+  } catch(e) { /* ไม่แสดง error ถ้าโหลด config ไม่ได้ */ }
+}
+
+// ── Load ──
 async function loadData(force=false) {
-  const btn = document.getElementById('refreshBtn');
+  const btn=document.getElementById('refreshBtn');
   btn.classList.add('spinning');
   setStatus('กำลังโหลดข้อมูล...');
   showLoading();
   try {
-    const res = await fetch(CSV_URL+'&t='+Date.now());
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
+    const [dataRes] = await Promise.all([
+      fetch(CSV_URL+'&t='+Date.now()),
+      loadConfig(),
+    ]);
+    if (!dataRes.ok) throw new Error(`HTTP ${dataRes.status}`);
+    const text = await dataRes.text();
     records = parseRecords(text);
-    lastUpdated = new Date();
-    setStatus(`ข้อมูล ${records.length} รายการ · อัปเดต ${formatTime(lastUpdated)}`);
+    const updatedStr = sheetUpdatedAt ? ` · ข้อมูล ณ ${sheetUpdatedAt}` : '';
+    setStatus(`${records.length} รายการ${updatedStr}`);
     renderResults(currentQuery);
   } catch(e) {
     setStatus('โหลดข้อมูลไม่สำเร็จ');
@@ -325,111 +383,124 @@ async function loadData(force=false) {
   }
 }
 
-function formatTime(d) {
-  return d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-}
-
-// Search
-const PLATE_RE = /^(\d{0,2})([ก-ฮ]{1,3})(\d{1,5})$/;
+// ── Search ──
+const PLATE_RE      = /^(\d{0,2})([ก-ฮ]{1,3})(\d{1,5})$/;
 const FLOOR_SLOT_RE = /^(\d+)\/(\d+)$/;
 
 function normalize(s) { return s.replace(/\s+/g,'').toLowerCase(); }
 function parsePlate(s) {
-  const m = PLATE_RE.exec(s.replace(/\s+/g,''));
-  return m ? { consonants: m[2], number: m[3] } : null;
+  const m=PLATE_RE.exec(s.replace(/\s+/g,''));
+  return m ? { consonants:m[2], number:m[3] } : null;
 }
 
 function search(query) {
-  const q = query.trim();
-  // ไม่มี query → แสดงทั้งหมด
+  const q=query.trim();
   if (!q) return records.map(r=>({ record:r, matchedPlate:r.mainPlate, isExact:false, showAll:true }));
 
   // ชั้น/ช่อง
-  const fs = FLOOR_SLOT_RE.exec(q);
+  const fs=FLOOR_SLOT_RE.exec(q);
   if (fs) {
     return records
-      .filter(r => r.floor===fs[1] && r.slot===fs[2])
+      .filter(r=>r.floor===fs[1] && r.slot===fs[2])
       .map(r=>({ record:r, matchedPlate:r.mainPlate, isExact:true }));
   }
 
-  const qn = normalize(q);
-  const qParts = parsePlate(q);
-  const isDigits = /^\d+$/.test(q);
-  const results = [];
+  const qn=normalize(q);
+  const qParts=parsePlate(q);
+  const isDigits=/^\d+$/.test(q);
+  const results=[];
 
   for (const r of records) {
     // ชื่อ
     if (qn.length>=2 && normalize(r.name).includes(qn)) {
       results.push({ record:r, matchedPlate:r.mainPlate, isExact:false, byName:true }); continue;
     }
-    // ทะเบียน
-    const allPlates = [r.mainPlate,...r.altPlates].filter(p=>p.trim());
+    const allPlates=[r.mainPlate,...r.altPlates].filter(p=>p.trim());
+    let pushed=false;
     for (const p of allPlates) {
-      const pParts = parsePlate(p);
+      if (pushed) break;
+      const pParts=parsePlate(p);
       if (qParts && pParts) {
+        // exact plate match (พยัญชนะ+เลข)
         if (qParts.consonants===pParts.consonants && qParts.number===pParts.number) {
-          results.push({ record:r, matchedPlate:p, isExact:true }); break;
+          results.push({ record:r, matchedPlate:p, isExact:true }); pushed=true;
         }
       } else if (isDigits && pParts) {
-        if (pParts.number===qn) { results.push({ record:r, matchedPlate:p, isExact:false }); break; }
+        // ค้นเฉพาะเลขท้าย exact
+        if (pParts.number===qn) { results.push({ record:r, matchedPlate:p, isExact:false }); pushed=true; }
       }
     }
-  }
-
-  // fallback
-  if (results.length===0 && qn.length>=4) {
-    for (const r of records) {
-      const allPlates=[r.mainPlate,...r.altPlates].filter(p=>p.trim());
+    if (pushed) continue;
+    // ★ ค้นหาทะเบียนบางส่วน — เช่น "55" เจอ "งห55", "ญฮ55"
+    if (qn.length>=2) {
       for (const p of allPlates) {
-        if (normalize(p).includes(qn)) { results.push({ record:r, matchedPlate:p, isExact:false }); break; }
+        if (normalize(p).includes(qn)) {
+          results.push({ record:r, matchedPlate:p, isExact:false, partial:true }); break;
+        }
       }
     }
   }
   return results;
 }
 
-// Render
+// ── Render ──
 function renderResults(query) {
-  const area = document.getElementById('resultsArea');
-  const badge = document.getElementById('countBadge');
+  const area=document.getElementById('resultsArea');
+  const badge=document.getElementById('countBadge');
   if (records.length===0) { area.innerHTML=''; badge.style.display='none'; return; }
 
-  let results = search(query);
+  const raw=search(query);
+  const sorted=sortRecords(raw.map(r=>r.record));
+  const results=sorted.map(rec=>raw.find(r=>r.record===rec)).filter(Boolean);
+  const isAll=!query.trim();
 
-  // เรียงลำดับ
-  const sorted = sortRecords(results.map(r=>r.record));
-  const sortedResults = sorted.map(rec => results.find(r=>r.record===rec)).filter(Boolean);
-
-  const isAll = !query.trim();
-
-  if (isAll) {
-    badge.textContent = `ทั้งหมด ${sortedResults.length} รายการ`;
-    badge.style.display = 'inline-block';
-    area.innerHTML = `<div class="results">${sortedResults.map(r=>cardHTML(r)).join('')}</div>`;
-    return;
-  }
-
-  if (sortedResults.length===0) {
+  if (results.length===0) {
     badge.style.display='none';
     area.innerHTML=`<div class="empty-wrap"><div class="icon">🔍</div><p>ไม่พบรายการที่ตรงกัน</p><div class="sub">ลองพิมพ์ใหม่หรือเปลี่ยนรูปแบบ</div></div>`;
     return;
   }
 
-  badge.textContent=`พบ ${sortedResults.length} รายการ`;
+  badge.textContent = isAll ? `ทั้งหมด ${results.length} รายการ` : `พบ ${results.length} รายการ`;
   badge.style.display='inline-block';
-  area.innerHTML=`<div class="results">${sortedResults.map(r=>cardHTML(r)).join('')}</div>`;
+
+  // ถ้าเรียงตามชั้น/ช่อง → group by ชั้น + แสดงจำนวน
+  if (currentSort==='floor') {
+    const groups={};
+    for (const res of results) {
+      const fl=res.record.floor||'ไม่ระบุ';
+      if (!groups[fl]) groups[fl]=[];
+      groups[fl].push(res);
+    }
+    const floorKeys=Object.keys(groups).sort((a,b)=>(parseInt(a)||0)-(parseInt(b)||0));
+    area.innerHTML=floorKeys.map(fl=>`
+      <div class="floor-group">
+        <div class="floor-header">
+          <span>🏢 ชั้น ${fl}</span>
+          <span class="floor-count">${groups[fl].length} คัน</span>
+        </div>
+        <div class="results">${groups[fl].map(r=>cardHTML(r,isAll)).join('')}</div>
+      </div>`).join('');
+  } else {
+    area.innerHTML=`<div class="results">${results.map(r=>cardHTML(r,isAll)).join('')}</div>`;
+  }
 }
 
-function cardHTML({ record:r, matchedPlate, isExact, byName, showAll }) {
+function cardHTML({ record:r, matchedPlate, isExact, byName, showAll, partial }, isAll) {
   const allPlates=[r.mainPlate,...r.altPlates].filter(p=>p.trim());
-  const platesHTML=allPlates.map(p=>
-    `<span class="plate-tag ${p===matchedPlate && !byName && !showAll ? 'matched' : ''}">${p}</span>`
-  ).join('');
+  const platesHTML=allPlates.map(p=>{
+    const isMatch=p===matchedPlate && !byName && !isAll;
+    return `<span class="plate-tag ${isMatch?'matched':''}" onclick="copyPlate(this,'${p}')">${p}</span>`;
+  }).join('');
+
+  const showBadge=!isAll;
+  const badgeLabel = isExact ? 'ตรงทั้งหมด' : partial ? 'บางส่วน' : 'ใกล้เคียง';
+  const badgeClass = isExact ? 'badge-exact' : 'badge-partial';
+
   return `
-    <div class="card ${isExact&&!showAll?'exact':''}">
+    <div class="card ${isExact&&!isAll?'exact':''}">
       <div class="card-top">
         <div class="card-name">${r.name}</div>
-        ${!showAll?`<span class="badge ${isExact?'badge-exact':'badge-partial'}">${isExact?'ตรงทั้งหมด':'ใกล้เคียง'}</span>`:''}
+        ${showBadge?`<span class="badge ${badgeClass}">${badgeLabel}</span>`:''}
       </div>
       <div class="card-meta">
         ${r.floor?`<div class="meta-item">🏢 ชั้น <strong>${r.floor}</strong></div>`:''}
@@ -439,7 +510,17 @@ function cardHTML({ record:r, matchedPlate, isExact, byName, showAll }) {
     </div>`;
 }
 
-// UI helpers
+// ── Copy plate ──
+function copyPlate(el, text) {
+  navigator.clipboard.writeText(text).then(()=>{
+    el.classList.add('copied');
+    const orig=el.textContent;
+    el.textContent='✓ คัดลอก';
+    setTimeout(()=>{ el.classList.remove('copied'); el.textContent=orig; }, 1200);
+  }).catch(()=>{});
+}
+
+// ── UI helpers ──
 function setStatus(msg) { document.getElementById('statusText').textContent=msg; }
 function showLoading() {
   document.getElementById('countBadge').style.display='none';
@@ -455,14 +536,14 @@ function clearSearch() {
   renderResults('');
 }
 
-// Input
+// ── Input ──
 let debounce;
 function handleInput() {
   const val=document.getElementById('searchInput').value;
   currentQuery=val;
   document.getElementById('clearBtn').classList.toggle('visible', val.length>0);
   clearTimeout(debounce);
-  debounce=setTimeout(()=>renderResults(val), 120);
+  debounce=setTimeout(()=>renderResults(val),150);
 }
 document.getElementById('searchInput').addEventListener('input', handleInput);
 
